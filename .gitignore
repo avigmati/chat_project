@@ -1,0 +1,11 @@
+*.py[co]
+*.pyc
+*.swp
+__pycache__
+.idea
+/logs*
+node_modules
+.venv
+.venv_build
+channels_endpoints
+
