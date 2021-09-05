@@ -288,7 +288,7 @@ async def notify_user_list(consumer, room_id, user_id, data):
     await asyncio.gather(*[
         consumer.send_to_channel(
             channel,
-            Response(None, data, consumers=['UserListConsumer'])
+            Response(None, data, consumers=['UsersConsumer'])
         )
         for channel in room_channels
     ])

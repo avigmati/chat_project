@@ -36,7 +36,6 @@ let socket = new ReconnectingWebSocket(socket_url, null,
 )
 
 let cmd_id = 0
-let registered_consumers = []
 
 /*
 Connection event
@@ -79,18 +78,6 @@ const onopen = () => {
 const onclose = () => {
     console.log('Connection close')
     dce_connection.dispatchEvent(new Event('disconnected'))
-}
-
-const get_consumer = (name) => {
-    /*
-     Returns consumer class method by consumer class name
-     */
-    for (let c of registered_consumers) {
-        if (c.name === name) {
-            return c.consumer
-        }
-    }
-    return null
 }
 
 const onmessage = (event) => {
@@ -155,12 +142,10 @@ const onmessage = (event) => {
             if (response.consumers.length === 0) {
                 throw new DceException('Empty consumers list in response.', null)
             }
-            for (let c of response.consumers) {
-                let consumer = get_consumer(c)
-                if (consumer) {
-                    consumer(response.data, response.error, response.error_data)
-                } else {
-                    throw new DceException(`Consumer ${c} not found.`, null)
+            else {
+                for (let c of response.consumers) {
+                    let consumer = get_consumer(c)
+                    consumer(response)
                 }
             }
         }
@@ -266,13 +251,19 @@ export const dce = (endpoint, data, token, log_data_filter=null, push=false) => 
 Consumers
  */
 
-export const consumer = (target) => {
-    /*
-     Decorator for consumer class
-     */
+let registered_consumers = {}
 
-    registered_consumers.push({
-        'name': target.prototype.constructor.getClassName(),
-        'consumer': target.prototype.consumer
-    })
+
+export const consumer = (func) => {
+    if (typeof func !== 'function') {
+        throw new DceException(`Registered consumer "${func}" must be a function.`, null)
+    }
+    registered_consumers[func.prototype.constructor.name] = func
+}
+
+const get_consumer = (name) => {
+    if (!registered_consumers.hasOwnProperty(name)) {
+      throw new DceException(`Consumer ${name} not found.`)
+    }
+    return registered_consumers[name]
 }
