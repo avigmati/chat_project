@@ -8,4 +8,4 @@ node_modules
 .venv
 .venv_build
 channels_endpoints
-chatik/front/channels_endpoints_js
+chatik/front/channels_endpoints
