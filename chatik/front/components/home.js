@@ -11,7 +11,7 @@ class Home extends Component {
                         <div className="col-lg-6 col-md-8 mx-auto">
                             <h1 className="fw-light">Example chat project</h1>
                             <p className="lead text-muted">
-                                This project was created to demonstrate the channels-endpoints and servitin applications.
+                                This project created for demonstrate usage of channels_endpoints and servitin packages.
                             </p>
                         </div>
                     </div>

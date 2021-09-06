@@ -1,5 +1,4 @@
 import * as actions from "./actions"
-// import {consumer} from './dce'
 import {consumer} from "channels_endpoints"
 
 
