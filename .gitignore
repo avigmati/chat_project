@@ -9,3 +9,4 @@ node_modules
 .venv_build
 channels_endpoints
 chatik/front/channels_endpoints
+servitin
