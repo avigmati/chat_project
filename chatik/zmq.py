@@ -10,7 +10,7 @@ class BotValidator(BaseModel):
     data: str
 
     @validator('command')
-    def validate_command(self, value):
+    def validate_command(cls, value):
         if not isinstance(value, str):
             raise ValueError('command must be string')
 
@@ -21,7 +21,7 @@ class BotValidator(BaseModel):
         return value
 
     @validator('data')
-    def validate_data(self, value):
+    def validate_data(cls, value):
         if not isinstance(value, str):
             raise ValueError('"data" must be string')
         return value
