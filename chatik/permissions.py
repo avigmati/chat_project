@@ -20,3 +20,9 @@ class PermissionDeleteRoom(BasePermission):
     async def check_perm(self):
         if not await sync_to_async(self.check)():
             raise AccessForbidden(self.request, self.path)
+
+
+class PermissionLogs(BasePermission):
+    async def check_perm(self):
+        if not self.user.is_superuser:
+            raise AccessForbidden(self.request, self.path, log_exc=False)

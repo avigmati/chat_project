@@ -8,10 +8,11 @@ from asgiref.sync import sync_to_async
 from channels_endpoints.main import endpoint, disconnect, Response
 from servitin.lib.zmq.client import Servitin
 from servitin.lib.zmq.client import ValidationError as ZmqValidationError
+from django.conf import settings
 import chatik.settings
 
 from .models import Room, ChatUser
-from .permissions import PermissionCreateRoom, PermissionDeleteRoom
+from .permissions import PermissionCreateRoom, PermissionDeleteRoom, PermissionLogs
 
 
 logger = logging.getLogger(__name__)
@@ -346,3 +347,75 @@ async def send(request):
 
         if error:
             raise Exception(f'Service error:: {error.__repr__()}')
+
+
+async def get_log_files():
+    """
+    get filenames in logs/ directory
+    :return: tuple: (list of filenames, error)
+    """
+
+    ls = "ls | egrep '\.log$|\.access$|\.error$|\.txt$'"
+    cmd = f'cd {settings.LOG_DIR} && {ls}'
+    process = await asyncio.create_subprocess_shell(
+        cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+        shell=True
+    )
+    stdout, stderr = await process.communicate()
+    if stdout:
+        data = [x for x in stdout.decode('UTF8').split('\n') if len(x)]
+        return data, None
+    if stderr:
+        return None, stderr.decode('UTF8')
+
+
+@endpoint(permissions=[PermissionLogs])
+async def get_logs(request):
+    data, error = await get_log_files()
+    if not error:
+        return Response(request, data)
+    else:
+        return Response(request, None, error=error)
+
+
+@endpoint(permissions=[PermissionLogs], timeout=None)
+async def tail(request):
+    """
+    tail -F selected file and send each line to js TailConsumer until cancelled
+    """
+
+    logs, error = await get_log_files()
+    if request.data['log'] not in logs:
+        return Response(request, None, error='File not found')
+    log = settings.LOG_DIR.joinpath(request.data['log'])
+    num_last_strings = int(request.data['num_last_strings'])
+
+    process = await asyncio.create_subprocess_exec(
+        'tail', '-F', f'-n {num_last_strings}', log,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+
+    async def read_stream(stream):
+        while True:
+            line = await stream.readline()
+            if line:
+                await request.consumer.send(text_data=Response(None, line.decode("UTF8"), consumers=['LogConsumer']))
+            else:
+                break
+
+    try:
+        await request.consumer.send(text_data=Response(None, f'===== {log} =====', consumers=['LogConsumer']))
+
+        await asyncio.gather(*[
+            read_stream(process.stdout),
+            read_stream(process.stderr)
+        ])
+
+        return Response(request, None)
+
+    except asyncio.CancelledError:
+        process.terminate()
+        raise

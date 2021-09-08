@@ -4,6 +4,8 @@ import {  HashRouter as Router, Switch, Route, Link,  } from 'react-router-dom'
 
 import Home from './home'
 import Chat from './chat'
+import Logs from './logs'
+
 
 class App extends Component {
     render() {
@@ -28,6 +30,9 @@ class App extends Component {
                                             <Link to={'/chat'} className="nav-link" aria-current="page" href="#">Chat</Link>
                                         </li>
                                         <li className="nav-item">
+                                            <Link to={'/logs'} className="nav-link" aria-current="page" href="#">Logs</Link>
+                                        </li>
+                                        <li className="nav-item">
                                             <a className="nav-link" href="/admin">Admin</a>
                                         </li>
                                     </ul>
@@ -40,6 +45,7 @@ class App extends Component {
                         <Route exact path='/' component={Home} />
                         <Route exact path='/chat' component={Chat} />
                         <Route exact path='/chat/:room_id' component={Chat} />
+                        <Route exact path='/logs' component={Logs} />
                     </Switch>
                 </React.Fragment>
             </Router>

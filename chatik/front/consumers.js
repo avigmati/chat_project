@@ -24,3 +24,7 @@ consumer(function MessageConsumer(response) {
     console.log('MessageConsumer: ', response.data)
     actions.add_message(response.data)
 })
+
+consumer(function LogConsumer(response) {
+    console.log(response.data)
+})
