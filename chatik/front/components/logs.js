@@ -15,11 +15,19 @@ class Logs extends Component {
         this.tail_token = null
     }
 
-    dce = (action, data) => {
+    cancel = () => {
+        if (this.tail_token) {
+            this.tail_token.cancel()
+            this.tail_token = null
+        }
+    }
+
+    dce_cancelable = (action, data) => {
+        this.cancel()
         let t = {}
         let p = dce(action, data, t, null)
-        this.promises.push({token: t, promise: p}) // for unmount cancel
-        return {token: t, promise: p}
+        this.tail_token = t
+        return p
     }
 
     componentDidMount() {
@@ -37,10 +45,7 @@ class Logs extends Component {
     }
 
     componentWillUnmount() {
-        this.promises.forEach(p => {
-            p.token.cancel()
-        })
-        this.promises = []
+        this.cancel()
     }
 
     set_num_strings = (_, event) => {
@@ -50,9 +55,7 @@ class Logs extends Component {
     }
 
     tail = (log) => {
-        if (this.tail_token) this.tail_token.cancel()
-        let {token, promise} = this.dce('chatik.tail', {log: log, num_last_strings: this.state.num_last_strings})
-        this.tail_token = token
+        const promise = this.dce_cancelable('chatik.tail', {log: log, num_last_strings: this.state.num_last_strings})
         promise.then(
             response => {},
             error => {
@@ -72,7 +75,7 @@ class Logs extends Component {
 
         return (
             <React.Fragment>
-                <section className="py-3 text-center container">
+                <section className="py-2 text-center container">
                     <h4 className="fw-light">Hit the button, open js console and see logs realtime</h4>
                 </section>
                 <div className="container py-4">
@@ -96,11 +99,4 @@ class Logs extends Component {
     }
 }
 
-const mapStateToProps = function(store) {
-    return {
-        selected_room: store.chatik_state.selected_room,
-        nickname: store.chatik_state.nickname,
-    }
-}
-
-export default connect(mapStateToProps)(Logs)
+export default Logs
