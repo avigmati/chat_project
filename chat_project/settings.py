@@ -85,7 +85,6 @@ DATABASES = {
         'NAME': 'chat_project',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        # 'HOST': '127.0.0.1',
         'HOST': os.environ.get('POSTGRES_HOST', '127.0.0.1'),
         'PORT': '5432',
     }
@@ -192,7 +191,6 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            # "hosts": [('127.0.0.1', 6379)],
             "hosts": [(os.environ.get('REDIS_HOST', '127.0.0.1'), 6379)],
         },
     },
