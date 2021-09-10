@@ -1,0 +1,10 @@
+.git
+.venv
+.venv_build
+channels_endpoints
+logs
+.gitignore
+db.sqlite3
+chatik/front/channels_endpoints
+chatik/front/node_modules
+servitin

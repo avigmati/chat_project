@@ -10,3 +10,4 @@ node_modules
 channels_endpoints
 chatik/front/channels_endpoints
 servitin
+db.sqlite3

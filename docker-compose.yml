@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=chat_project
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - migration
+      - redis
+    environment:
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+
+  redis:
+    image: redis
+
+  migration:
+    build: .
+    command: python manage.py migrate --noinput
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+      - DJANGO_SU_NAME=admin
+      - DJANGO_SU_EMAIL=admin@admin.com
+      - DJANGO_SU_PASSWORD=123456
+
+volumes:
+  postgres:
