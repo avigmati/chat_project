@@ -59,5 +59,17 @@ services:
       - DJANGO_SU_EMAIL=admin@admin.com
       - DJANGO_SU_PASSWORD=123456
 
+  clear_users:
+    build: .
+    command: python manage.py clear_users
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - migration
+    environment:
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+
 volumes:
   postgres:
