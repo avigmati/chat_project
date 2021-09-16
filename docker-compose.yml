@@ -21,9 +21,26 @@ services:
       - db
       - migration
       - redis
+      - bot
     environment:
       - POSTGRES_HOST=db
       - REDIS_HOST=redis
+      - SERVITIN_CHATIK_ZMQ_CONNECT_ADDRESS=tcp://bot:5555
+
+  bot:
+    build: .
+    command: python manage.py run_servitin
+    volumes:
+      - .:/code
+    ports:
+      - "5555:5555"
+    depends_on:
+      - db
+      - migration
+    environment:
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+      - SERVITIN_CHATIK_ZMQ_BIND_ADDRESS=tcp://*:5555
 
   redis:
     image: redis

@@ -1,11 +1,11 @@
 from django.conf import settings
+import os
 
 
 settings.SERVITIN_CHATIK_ZMQ = getattr(settings, 'SERVITIN_CHATIK_ZMQ', {
-    'HOST': 'tcp://127.0.0.1',
-    'PORT': 5555,
-    'SECRET': '',
-    'CRYPTO_ALGORITHM': 'HS256'
+    'BIND_ADDRESS': os.environ.get('SERVITIN_CHATIK_ZMQ_BIND_ADDRESS', 'tcp://*:5555'),
+    'CONNECT_ADDRESS': os.environ.get('SERVITIN_CHATIK_ZMQ_CONNECT_ADDRESS', 'tcp://bot:5555'),
+    'SECRET': ''
 })
 
 settings.SERVITIN_CHATIK_LOGGING = getattr(settings, 'SERVITIN_CHATIK_LOGGING', {
