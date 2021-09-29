@@ -4,7 +4,7 @@ import os
 
 settings.SERVITIN_CHATIK_ZMQ = getattr(settings, 'SERVITIN_CHATIK_ZMQ', {
     'BIND_ADDRESS': os.environ.get('SERVITIN_CHATIK_ZMQ_BIND_ADDRESS', 'tcp://*:5555'),
-    'CONNECT_ADDRESS': os.environ.get('SERVITIN_CHATIK_ZMQ_CONNECT_ADDRESS', 'tcp://bot:5555'),
+    'CONNECT_ADDRESS': os.environ.get('SERVITIN_CHATIK_ZMQ_CONNECT_ADDRESS', 'tcp://127.0.0.1:5555'),
     'SECRET': ''
 })
 

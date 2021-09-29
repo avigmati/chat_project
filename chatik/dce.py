@@ -22,9 +22,6 @@ def log(request, msg):
     logger.info(f'[chat] {request.log} : {msg}')
 
 
-chatik_service = Servitin('chatik')
-
-
 @endpoint
 async def register_user(request):
     """
@@ -329,8 +326,10 @@ async def send(request):
     if command:
         error = None
         try:
-            answer = await chatik_service.request('bot', {'command': command, 'data': user})
-            answer = answer['data']
+            async with Servitin('chatik').connect() as chatik:
+                response = await chatik.bot({'command': command, 'data': user})
+                answer = response['data']
+
         except ZmqValidationError as errors:
             answer = ' '.join([e['msg'] for e in errors.args[0]])
         except Exception as e:

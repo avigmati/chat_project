@@ -1,3 +1,5 @@
+import asyncio
+
 from servitin.lib.zmq.server import zmq, Response
 from asgiref.sync import sync_to_async
 from pydantic import BaseModel, validator
@@ -47,5 +49,5 @@ async def bot(request):
         data = await sync_to_async(get_data, thread_sensitive=False)()
         response = Response(request, f'users online: {data}')
 
-    request.log.info(f'command: {command}', id=request.request_id, name='@bot')
+    request.log.info(f'command: {command}, data: {data}', id=request.request_id, name='@bot')
     return response
