@@ -10,8 +10,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <script>
         const DCE_SOCKET_URL = 'ws://' + window.location.host + '/ws/chatik/'
-        const DCE_DEBUG = false
-        const DCE_VERBOSE = true
+        const DCE_SOCKET_OPTIONS = {debug: false}
+        const DCE_DEBUG = true
+        const DCE_DEBUG_DATA_REQUEST = true
+        const DCE_DEBUG_DATA_RESPONSE = true
+
         const USER = ({{ user|safe }})
     </script>
 

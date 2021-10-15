@@ -3,28 +3,25 @@ import {consumer} from "channels_endpoints"
 
 
 consumer('RoomsConsumer', (response) => {
-    console.log('RoomsConsumer: ', response.data)
-    actions.delete_room(response.data.room)
+    actions.delete_room(response.room)
 })
 
 consumer('UsersConsumer', (response) => {
-    console.log('UsersConsumer: ', response.data)
-    if (response.data.action === 'join') {
-        actions.add_user_to_userlist(response.data.nickname)
-        actions.add_message({text: `${response.data.nickname} joined`, type: 'service'})
-    } else if (response.data.action === 'leave') {
-        actions.rem_user_from_userlist(response.data.nickname)
-        actions.add_message({text: `${response.data.nickname} leave`, type: 'service'})
+    if (response.action === 'join') {
+        actions.add_user_to_userlist(response.nickname)
+        actions.add_message({text: `${response.nickname} joined`, type: 'service'})
+    } else if (response.action === 'leave') {
+        actions.rem_user_from_userlist(response.nickname)
+        actions.add_message({text: `${response.nickname} leave`, type: 'service'})
     } else {
 
     }
 })
 
 consumer('MessageConsumer', (response) => {
-    console.log('MessageConsumer: ', response.data)
-    actions.add_message(response.data)
+    actions.add_message(response)
 })
 
 consumer('LogConsumer', (response) => {
-    console.log(response.data)
+    console.log(response)
 })

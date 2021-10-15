@@ -322,30 +322,31 @@ async def send(request):
     command = None
     if b:
         _, command = b.groups()
+    if not command:
+        return
 
-    if command:
-        error = None
-        try:
-            async with Servitin('chatik').connect() as chatik:
-                response = await chatik.bot({'command': command, 'data': user})
-                answer = response['data']
+    error = None
+    try:
+        async with Servitin('chatik').connect() as chatik:
+            response = await chatik.bot({'command': command, 'data': user})
+            answer = response['data']
 
-        except ZmqValidationError as errors:
-            answer = ' '.join([e['msg'] for e in errors.args[0]])
-        except Exception as e:
-            answer = e.__repr__()
-            error = e
+    except ZmqValidationError as errors:
+        answer = ' '.join([e['msg'] for e in errors.args[0]])
+    except Exception as e:
+        answer = e.__repr__()
+        error = e
 
-        await asyncio.gather(*[
-            request.consumer.send_to_channel(
-                channel,
-                Response(None, {'text': answer, 'user': 'bot'}, consumers=['MessageConsumer'])
-            )
-            for channel in data['room_channels']
-        ])
+    await asyncio.gather(*[
+        request.consumer.send_to_channel(
+            channel,
+            Response(None, {'text': answer, 'user': 'bot'}, consumers=['MessageConsumer'])
+        )
+        for channel in data['room_channels']
+    ])
 
-        if error:
-            raise Exception(f'Service error:: {error.__repr__()}')
+    if error:
+        raise Exception(f'Service error:: {error.__repr__()}')
 
 
 async def get_log_files():

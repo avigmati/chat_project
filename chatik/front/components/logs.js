@@ -1,5 +1,4 @@
 import React, { Component } from "react"
-import {connect} from 'react-redux'
 import {dce} from "channels_endpoints"
 
 
@@ -22,10 +21,17 @@ class Logs extends Component {
         }
     }
 
-    dce_cancelable = (action, data) => {
+    dce_cancelable = (action, data, args) => {
         this.cancel()
         let t = {}
-        let p = dce(action, data, t, null)
+
+        if (args) {
+            args.token = t
+        } else {
+            args = {token: t}
+        }
+
+        let p = dce(action, data, args)
         this.tail_token = t
         return p
     }

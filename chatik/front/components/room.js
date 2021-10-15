@@ -1,9 +1,14 @@
 import React, { Component } from "react"
 import {connect} from "react-redux"
 import * as actions from "../actions"
-import {dce} from "channels_endpoints"
 import Nickname from "./nickname"
+import {dce} from "channels_endpoints"
 
+
+const log = (data) => {
+    data.message = 123
+    return data
+}
 
 class Room extends Component {
     constructor(props) {
@@ -29,7 +34,10 @@ class Room extends Component {
 
     send = (event) => {
         event.preventDefault()
-        if (this.state.message) dce('chatik.send', {'message': this.state.message}, null, null, true)
+        if (this.state.message) {
+            // dce('chatik.send', {'message': this.state.message},{push: true, log_data_filter: log})
+            dce('chatik.send', {'message': this.state.message},{push: true})
+        }
     }
 
     componentDidMount() {
